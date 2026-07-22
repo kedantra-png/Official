@@ -10,9 +10,9 @@ const faqs = [
       "Oordhwa Tech Solutions delivers end-to-end digital solutions, including web development, mobile apps, AI integration, cloud services, and user-focused UI/UX design.",
   },
   {
-    question: "How does Oordhwa integrate AI into existing business software?",
+    question: "Can you redesign or modernize an existing website?",
     answer:
-      "We audit your operational workflows and embed custom AI agents, automated neural data pipelines, and LLM interfaces directly into your software—reducing manual workload while maintaining strict data privacy.",
+      "Yes. We can redesign your current website with a modern UI/UX, improved performance, SEO optimization, and enhanced functionality while preserving your business identity.",
   },
   {
     question: "What is the typical timeline for project development?",

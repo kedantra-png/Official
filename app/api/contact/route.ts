@@ -17,15 +17,22 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Invalid request." }, { status: 400 });
   }
 
-  const { name, email, message, type } = body as Record<string, unknown>;
+  const { phone, email, message, type } = body as Record<string, unknown>;
 
+  const cleanPhone = String(phone ?? "").trim();
   const cleanEmail = String(email ?? "").trim();
   const cleanMessage = String(message ?? "").trim();
-  const rawName = String(name ?? "").trim();
-  const cleanName = rawName || (cleanEmail ? cleanEmail.split("@")[0] : "Website Visitor");
   const inquiryType = ["feedback", "query", "complaint"].includes(String(type ?? ""))
     ? String(type)
     : "query";
+
+  // Backend Validation for Phone Number
+  if (!cleanPhone || !/^\+?[0-9\s\-()]{7,20}$/.test(cleanPhone)) {
+    return NextResponse.json(
+      { error: "Please enter a valid phone number (7-20 digits)." },
+      { status: 400 },
+    );
+  }
 
   if (!cleanMessage || cleanMessage.length < 5) {
     return NextResponse.json(
@@ -38,7 +45,7 @@ export async function POST(request: Request) {
     const supabase = createSupabaseServerClient();
 
     const { error } = await supabase.from("contact_inquiries").insert({
-      name: cleanName,
+      phone: cleanPhone,
       email: cleanEmail || null,
       inquiry_type: inquiryType,
       message: cleanMessage,

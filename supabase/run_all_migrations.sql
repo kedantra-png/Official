@@ -100,7 +100,8 @@ END $$;
 
 CREATE TABLE IF NOT EXISTS public.contact_inquiries (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-  name text NOT NULL,
+  name text,
+  phone text,
   email text,
   inquiry_type public.inquiry_type NOT NULL DEFAULT 'query',
   message text NOT NULL,
@@ -111,8 +112,8 @@ CREATE TABLE IF NOT EXISTS public.contact_inquiries (
   created_at timestamptz NOT NULL DEFAULT now(),
   updated_at timestamptz NOT NULL DEFAULT now(),
 
-  CONSTRAINT contact_inquiries_name_length CHECK (
-    char_length(trim(name)) >= 2 AND char_length(name) <= 120
+  CONSTRAINT contact_inquiries_phone_length CHECK (
+    phone IS NULL OR (char_length(trim(phone)) >= 7 AND char_length(phone) <= 30)
   ),
   CONSTRAINT contact_inquiries_message_length CHECK (
     char_length(trim(message)) >= 5 AND char_length(message) <= 5000
@@ -138,7 +139,12 @@ SECURITY INVOKER
 SET search_path = public
 AS $$
 BEGIN
-  NEW.name := trim(NEW.name);
+  IF NEW.name IS NOT NULL THEN
+    NEW.name := trim(NEW.name);
+  END IF;
+  IF NEW.phone IS NOT NULL THEN
+    NEW.phone := trim(NEW.phone);
+  END IF;
   NEW.message := trim(NEW.message);
   NEW.source := coalesce(nullif(trim(NEW.source), ''), 'website');
   RETURN NEW;

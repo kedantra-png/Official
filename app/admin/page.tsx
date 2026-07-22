@@ -7,7 +7,7 @@ import {
   Trash2, Plus, Eye, EyeOff, Loader2, RefreshCw,
   MessageSquareQuote, FolderKanban, LayoutDashboard,
   ChevronDown, ChevronUp, X, AlertCircle, CheckCircle2,
-  Building2, Pencil, UploadCloud, Inbox, Mail
+  Building2, Pencil, UploadCloud, Inbox, Mail, Download, Phone, Copy
 } from "lucide-react";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
@@ -45,8 +45,13 @@ type Tab = "dashboard" | "reviews" | "inquiries";
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
 function fmtDate(iso: string) {
-  return new Date(iso).toLocaleDateString("en-IN", {
-    day: "2-digit", month: "short", year: "numeric",
+  return new Date(iso).toLocaleString("en-IN", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: true,
   });
 }
 
@@ -955,7 +960,8 @@ function EditProjectModal({
 
 type Inquiry = {
   id: string;
-  name: string;
+  name: string | null;
+  phone: string | null;
   email: string | null;
   inquiry_type: string;
   message: string;
@@ -968,6 +974,14 @@ function InquiriesTab({ onToast }: { onToast: (msg: string, t: "ok" | "err") => 
   const [inquiries, setInquiries] = useState<Inquiry[]>([]);
   const [loading, setLoading] = useState(true);
   const [deleteId, setDeleteId] = useState<string | null>(null);
+  const [copiedId, setCopiedId] = useState<string | null>(null);
+
+  const handleCopy = (text: string, id: string) => {
+    navigator.clipboard.writeText(text);
+    setCopiedId(id);
+    onToast("Copied to clipboard", "ok");
+    setTimeout(() => setCopiedId(null), 2000);
+  };
 
   const fetchInquiries = useCallback(async () => {
     setLoading(true);
@@ -987,6 +1001,44 @@ function InquiriesTab({ onToast }: { onToast: (msg: string, t: "ok" | "err") => 
   }, [onToast]);
 
   useEffect(() => { fetchInquiries(); }, [fetchInquiries]);
+  
+  const exportToExcel = () => {
+    if (inquiries.length === 0) {
+      onToast("No inquiries to export", "err");
+      return;
+    }
+
+    // Prepare headers
+    const headers = ["Inquiry ID", "Phone Number", "Email Address", "Type", "Message Content", "Status", "Source", "Date Received"];
+    
+    // Map rows and escape quotes/newlines
+    const rows = inquiries.map((inq) => [
+      inq.id,
+      inq.phone || "",
+      inq.email || "",
+      inq.inquiry_type,
+      inq.message.replace(/"/g, '""').replace(/\r?\n|\r/g, " "),
+      inq.status,
+      inq.source,
+      fmtDate(inq.created_at),
+    ]);
+
+    // Construct CSV file data
+    const csvContent = [
+      headers.join(","),
+      ...rows.map((row) => row.map((val) => `"${val}"`).join(",")),
+    ].join("\n");
+
+    // File download trigger
+    const blob = new Blob([new Uint8Array([0xEF, 0xBB, 0xBF]), csvContent], { type: "text/csv;charset=utf-8;" }); // include UTF-8 BOM
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `Oordhwa_Inquiries_${new Date().toISOString().split("T")[0]}.csv`;
+    link.click();
+    URL.revokeObjectURL(url);
+    onToast("Excel CSV export downloaded", "ok");
+  };
 
   const handleUpdateStatus = async (id: string, status: "new" | "read" | "resolved") => {
     try {
@@ -1034,13 +1086,21 @@ function InquiriesTab({ onToast }: { onToast: (msg: string, t: "ok" | "err") => 
           <h2 className="font-serif font-bold text-xl text-black">Get In Touch Submissions</h2>
           <p className="text-xs text-black/50 mt-0.5">{inquiries.length} total messages received</p>
         </div>
-        <button
-          onClick={fetchInquiries}
-          disabled={loading}
-          className="flex items-center gap-1.5 rounded-lg border border-black/10 px-3 py-2 text-xs font-semibold text-black/60 hover:bg-black/5 transition-colors disabled:opacity-40"
-        >
-          <RefreshCw className={`size-3.5 ${loading ? "animate-spin" : ""}`} /> Refresh
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={exportToExcel}
+            className="flex items-center gap-1.5 rounded-lg border border-cyan-200 bg-cyan-50/50 px-3 py-2 text-xs font-semibold text-cyan-700 hover:bg-cyan-100/60 transition-colors"
+          >
+            <Download className="size-3.5" /> Export Excel
+          </button>
+          <button
+            onClick={fetchInquiries}
+            disabled={loading}
+            className="flex items-center gap-1.5 rounded-lg border border-black/10 px-3 py-2 text-xs font-semibold text-black/60 hover:bg-black/5 transition-colors disabled:opacity-40"
+          >
+            <RefreshCw className={`size-3.5 ${loading ? "animate-spin" : ""}`} /> Refresh
+          </button>
+        </div>
       </div>
 
       {loading ? (
@@ -1060,14 +1120,53 @@ function InquiriesTab({ onToast }: { onToast: (msg: string, t: "ok" | "err") => 
               <div className="flex flex-wrap items-center justify-between gap-2 border-b border-black/6 pb-3">
                 <div className="flex items-center gap-2.5">
                   <div className="size-8 rounded-full bg-cyan-50 border border-cyan-100 flex items-center justify-center font-semibold text-xs text-cyan-700 uppercase">
-                    {inq.name.substring(0, 2)}
+                    {inq.phone ? (
+                      <Phone className="size-3.5 text-cyan-700" />
+                    ) : inq.name ? (
+                      inq.name.substring(0, 2)
+                    ) : (
+                      "📞"
+                    )}
                   </div>
                   <div>
-                    <h3 className="text-sm font-bold text-black">{inq.name}</h3>
+                    <h3 className="text-sm font-bold text-black flex items-center gap-1.5">
+                      {inq.phone ? (
+                        <>
+                          <Phone className="size-3.5 text-black/40" />
+                          <span className="font-mono">{inq.phone}</span>
+                          <button
+                            onClick={() => handleCopy(inq.phone!, inq.id + "-phone")}
+                            className="p-1 rounded hover:bg-black/5 text-black/40 hover:text-black/70 transition-all flex items-center justify-center"
+                            title="Copy Phone Number"
+                          >
+                            {copiedId === inq.id + "-phone" ? (
+                              <CheckCircle2 className="size-3 text-emerald-600 animate-pulse" />
+                            ) : (
+                              <Copy className="size-3" />
+                            )}
+                          </button>
+                        </>
+                      ) : (
+                        inq.name || "Website Visitor"
+                      )}
+                    </h3>
                     {inq.email && (
-                      <a href={`mailto:${inq.email}`} className="text-xs text-cyan-600 hover:underline flex items-center gap-1">
-                        <Mail className="size-3" /> {inq.email}
-                      </a>
+                      <div className="flex items-center gap-1.5 mt-0.5">
+                        <a href={`mailto:${inq.email}`} className="text-xs text-cyan-600 hover:underline flex items-center gap-1">
+                          <Mail className="size-3" /> {inq.email}
+                        </a>
+                        <button
+                          onClick={() => handleCopy(inq.email!, inq.id + "-email")}
+                          className="p-1 rounded hover:bg-black/5 text-black/40 hover:text-black/70 transition-all flex items-center justify-center"
+                          title="Copy Email Address"
+                        >
+                          {copiedId === inq.id + "-email" ? (
+                            <CheckCircle2 className="size-3 text-emerald-600 animate-pulse" />
+                          ) : (
+                            <Copy className="size-3" />
+                          )}
+                        </button>
+                      </div>
                     )}
                   </div>
                 </div>

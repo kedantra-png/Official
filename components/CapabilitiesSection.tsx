@@ -241,7 +241,13 @@ export function CapabilitiesSection() {
                 whileHover={{ y: -4, scale: 1.012 }}
                 onMouseEnter={() => setActiveTab(cap.id)}
                 onMouseLeave={() => setActiveTab(null)}
-                className={`group relative flex flex-col justify-between p-6 rounded-3xl bg-white/[0.02] border border-white/[0.08] backdrop-blur-xl transition-all duration-300 ${cap.borderColor}`}
+                onClick={() => {
+                  const contactSection = document.getElementById("footer");
+                  if (contactSection) {
+                    contactSection.scrollIntoView({ behavior: "smooth" });
+                  }
+                }}
+                className={`group relative flex flex-col justify-between p-6 rounded-3xl bg-white/[0.02] border border-white/[0.08] backdrop-blur-xl transition-all duration-300 cursor-pointer ${cap.borderColor}`}
               >
                 {/* Top Subtle Gradient Overlay */}
                 <div

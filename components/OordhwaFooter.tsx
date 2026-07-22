@@ -900,8 +900,8 @@ function Bucket() {
 
 
 export function OordhwaFooter() {
-  const [formData, setFormData] = useState({ name: "", email: "", message: "" });
-  const [errors, setErrors] = useState({ email: "", message: "" });
+  const [formData, setFormData] = useState({ phone: "", email: "", message: "" });
+  const [errors, setErrors] = useState({ phone: "", email: "", message: "" });
   const [submitted, setSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
@@ -910,7 +910,15 @@ export function OordhwaFooter() {
     
     // Custom Validation
     let hasError = false;
-    const newErrors = { email: "", message: "" };
+    const newErrors = { phone: "", email: "", message: "" };
+
+    if (!formData.phone.trim()) {
+      newErrors.phone = "Please fill out this field.";
+      hasError = true;
+    } else if (!/^\+?[0-9\s\-()]{7,20}$/.test(formData.phone.trim())) {
+      newErrors.phone = "Please enter a valid phone number (7-20 digits).";
+      hasError = true;
+    }
 
     if (!formData.email.trim()) {
       newErrors.email = "Please fill out this field.";
@@ -939,8 +947,8 @@ export function OordhwaFooter() {
         body: JSON.stringify(formData),
       });
       setSubmitted(true);
-      setFormData({ name: "", email: "", message: "" });
-      setErrors({ email: "", message: "" });
+      setFormData({ phone: "", email: "", message: "" });
+      setErrors({ phone: "", email: "", message: "" });
     } catch {
       setSubmitted(true);
     } finally {
@@ -975,7 +983,7 @@ export function OordhwaFooter() {
               Start A Conversation
             </div>
 
-            <h2 className="font-heading text-4xl sm:text-5xl lg:text-6xl font-extrabold text-white tracking-tight leading-none">
+            <h2 className="font-heading text-4xl sm:text-5xl lg:text-6xl font-extrabold text-white tracking-tight">
               Get In Touch.
             </h2>
 
@@ -996,14 +1004,26 @@ export function OordhwaFooter() {
               <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-4">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="flex flex-col gap-1.5">
-                    <label className="text-[10.5px] font-mono text-white/60 uppercase tracking-wider">Your Name</label>
+                    <label className="text-[10.5px] font-mono text-white/60 uppercase tracking-wider">Phone Number *</label>
                     <input
-                      type="text"
-                      value={formData.name}
-                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                      placeholder="e.g. Alex Rivera"
-                      className="w-full px-4 py-2.5 text-xs sm:text-sm rounded-xl bg-black/60 border border-white/15 text-white placeholder:text-white/25 focus:outline-none focus:border-cyan-400 transition-colors"
+                      type="tel"
+                      value={formData.phone}
+                      onChange={(e) => {
+                        setFormData({ ...formData, phone: e.target.value });
+                        if (errors.phone) setErrors({ ...errors, phone: "" });
+                      }}
+                      placeholder="e.g. +1 555-0199"
+                      className={`w-full px-4 py-2.5 text-xs sm:text-sm rounded-xl bg-black/60 border text-white placeholder:text-white/25 focus:outline-none transition-colors ${
+                        errors.phone
+                          ? "border-rose-500/60 focus:border-rose-500 shadow-[0_0_10px_rgba(244,63,94,0.15)]"
+                          : "border-white/15 focus:border-cyan-400"
+                      }`}
                     />
+                    {errors.phone && (
+                      <span className="text-[11px] text-rose-400 font-mono font-medium animate-fade-in">
+                        {errors.phone}
+                      </span>
+                    )}
                   </div>
                   <div className="flex flex-col gap-1.5">
                     <label className="text-[10.5px] font-mono text-white/60 uppercase tracking-wider">Work Email *</label>
