@@ -49,16 +49,25 @@ function AvatarUpload({ disabled, onValue }: { disabled: boolean; onValue: (v: s
   return (
     <Field label="Profile picture" optional>
       <div className="flex items-center gap-3">
-        <div className="relative shrink-0 size-11 rounded-full overflow-hidden border border-white/15 bg-white/5 flex items-center justify-center">
-          {preview ? (
-            <>
-              <Image src={preview} alt="Preview" fill className="object-cover" sizes="44px" unoptimized />
-              <button type="button" onClick={clear} disabled={disabled} aria-label="Remove"
-                className="absolute inset-0 flex items-center justify-center bg-black/60 opacity-0 hover:opacity-100 transition-opacity rounded-full">
-                <X className="size-3.5 text-white" />
-              </button>
-            </>
-          ) : <UserCircle2 className="size-5 text-white/25" strokeWidth={1.25} />}
+        <div className="relative shrink-0 size-12">
+          <div className="relative w-full h-full rounded-full overflow-hidden border border-white/15 bg-white/5 flex items-center justify-center">
+            {preview ? (
+              <Image src={preview} alt="Preview" fill className="object-cover" sizes="48px" unoptimized />
+            ) : (
+              <UserCircle2 className="size-5.5 text-white/25" strokeWidth={1.25} />
+            )}
+          </div>
+          {preview && (
+            <button
+              type="button"
+              onClick={clear}
+              disabled={disabled}
+              aria-label="Remove photo"
+              className="absolute -top-0.5 -right-0.5 z-20 flex size-4.5 items-center justify-center rounded-full bg-rose-500 hover:bg-rose-600 text-white border border-black shadow-lg transition-colors active:scale-90"
+            >
+              <X className="size-2.5" strokeWidth={3} />
+            </button>
+          )}
         </div>
         {!urlMode ? (
           <div className="flex flex-wrap gap-2">
@@ -98,6 +107,28 @@ const panelStyle: React.CSSProperties = {
   border: "1px solid rgba(255,255,255,0.10)",
   boxShadow: "0 32px 80px rgba(0,0,0,0.75), 0 1px 0 rgba(255,255,255,0.06) inset",
 };
+
+function SafeAvatar({ src, alt }: { src?: string; alt: string }) {
+  const [imgSrc, setImgSrc] = useState(src || "/default.jfif");
+
+  useEffect(() => {
+    setImgSrc(src || "/default.jfif");
+  }, [src]);
+
+  return (
+    <Image
+      src={imgSrc}
+      alt={alt}
+      fill
+      className="object-cover"
+      sizes="48px"
+      unoptimized
+      onError={() => {
+        setImgSrc("/default.jfif");
+      }}
+    />
+  );
+}
 
 /* ── Form fields — shared between both layouts ───────────────────── */
 function FormFields({ status, error, imageVal, setImageVal }: {
@@ -315,27 +346,24 @@ export function CustomerExperiencesSection() {
                   {/* scrollable form — no scrollbar visible */}
                   <div className="flex-1 overflow-y-auto overscroll-contain px-4 py-3 scrollbar-none">
                     {formStatus === "success" ? SuccessPanel : (
-                      <form id="exp-form-mobile" onSubmit={handleSubmit} noValidate>
+                      <form id="exp-form-mobile" onSubmit={handleSubmit} noValidate className="flex flex-col gap-4">
                         <FormFields status={formStatus} error={formError} imageVal={imageValue} setImageVal={setImageValue} />
+                        
+                        <div className="flex flex-col gap-2 pt-3 border-t border-white/8">
+                          <button type="submit" disabled={formStatus === "submitting"}
+                            className="w-full rounded-xl bg-secondary py-3 text-[0.9rem] font-semibold text-white hover:bg-[#9a0000] active:bg-[#700000] disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2 transition-colors">
+                            {formStatus === "submitting" ? <><Loader2 className="size-4 animate-spin" />Saving&hellip;</> : "Publish experience"}
+                          </button>
+                          <DialogClose asChild>
+                            <button type="button" disabled={formStatus === "submitting"}
+                              className="w-full rounded-xl border border-white/10 bg-white/5 py-2.5 text-[0.85rem] font-medium text-white/60 hover:bg-white/10 hover:text-white disabled:opacity-50 transition-colors">
+                              Cancel
+                            </button>
+                          </DialogClose>
+                        </div>
                       </form>
                     )}
                   </div>
-
-                  {/* stacked CTA footer */}
-                  {formStatus !== "success" && (
-                    <div className="shrink-0 flex flex-col gap-1.5 px-4 pb-4 pt-2.5 border-t border-white/8">
-                      <button type="submit" form="exp-form-mobile" disabled={formStatus === "submitting"}
-                        className="w-full rounded-xl bg-secondary py-3 text-[0.9rem] font-semibold text-white hover:bg-[#9a0000] active:bg-[#700000] disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2 transition-colors">
-                        {formStatus === "submitting" ? <><Loader2 className="size-4 animate-spin" />Saving&hellip;</> : "Publish experience"}
-                      </button>
-                      <DialogClose asChild>
-                        <button type="button" disabled={formStatus === "submitting"}
-                          className="w-full rounded-xl border border-white/10 bg-white/5 py-2.5 text-[0.85rem] font-medium text-white/60 hover:bg-white/10 hover:text-white disabled:opacity-50 transition-colors">
-                          Cancel
-                        </button>
-                      </DialogClose>
-                    </div>
-                  )}
                 </div>
 
                 {/* ════ DESKTOP centered layout (visible at lg+) ════ */}
@@ -421,13 +449,13 @@ export function CustomerExperiencesSection() {
                 {indexLabel}
               </span>
               <div className="min-w-0 flex-1 sm:pt-6">
-                <blockquote className={`text-clamp-h3 font-light leading-relaxed tracking-tight text-white transition-all duration-300 ${isTransitioning ? "translate-x-4 opacity-0" : "translate-x-0 opacity-100"}`}>
+                <blockquote className={`text-clamp-h3 font-light leading-relaxed tracking-tight text-white transition-[transform,opacity] duration-500 ease-out will-change-[transform,opacity] ${isTransitioning ? "translate-x-4 opacity-0" : "translate-x-0 opacity-100"}`}>
                   &ldquo;{current.quote}&rdquo;
                 </blockquote>
-                <div className={`mt-8 transition-all duration-300 delay-100 sm:mt-10 ${isTransitioning ? "opacity-0" : "opacity-100"}`}>
+                <div className={`mt-8 transition-[transform,opacity] duration-500 ease-out delay-75 will-change-[transform,opacity] ${isTransitioning ? "opacity-0" : "opacity-100"}`}>
                   <div className="group flex cursor-default items-center gap-4">
-                    <div className="relative size-12 overflow-hidden rounded-full ring-2 ring-white/10 transition-all duration-300 group-hover:ring-white/30">
-                      <Image src={current.image} alt={current.author} fill className="object-cover" sizes="48px" unoptimized />
+                    <div className="relative size-12 overflow-hidden rounded-full ring-2 ring-white/10 transition-[ring] duration-300 group-hover:ring-white/30">
+                      <SafeAvatar src={current.image} alt={current.author} />
                     </div>
                     <div>
                       <p className="font-medium text-white">{current.author}</p>
@@ -440,21 +468,16 @@ export function CustomerExperiencesSection() {
                 </div>
               </div>
             </div>
-            <div className="mt-12 flex items-center justify-between sm:mt-16">
-              <div className="flex items-center gap-4 sm:gap-6">
-                <div className="flex items-center gap-3">
-                  {experiences.map((item, i) => (
-                    <button key={item.id} type="button" onClick={() => go(i)} className="group relative py-4" aria-label={`View experience ${i + 1}`}>
-                      <span className={`block h-px transition-all duration-500 ease-out ${i === active ? "w-12 bg-white" : "w-6 bg-white/20 group-hover:w-8 group-hover:bg-white/40"}`} />
-                    </button>
-                  ))}
-                </div>
-                <span className="text-xs tracking-widest text-white/40 uppercase">{indexLabel} / {String(total).padStart(2, "0")}</span>
-                {experiences.length > 1 && (
-                  <span className={`size-1.5 rounded-full transition-colors duration-500 ${isPaused ? "bg-white/20" : "bg-secondary animate-pulse"}`} />
-                )}
+            <div className="mt-12 flex items-center gap-4 sm:gap-6 w-full sm:mt-16">
+              <div className="flex-1 flex items-center gap-1.5 sm:gap-2.5">
+                {experiences.map((item, i) => (
+                  <button key={item.id} type="button" onClick={() => go(i)} className="flex-1 group relative py-4" aria-label={`View experience ${i + 1}`}>
+                    <span className={`block h-px w-full transition-all duration-500 ease-out ${i === active ? "bg-white" : "bg-white/20 group-hover:bg-white/45"}`} />
+                  </button>
+                ))}
               </div>
-              <div className="flex items-center gap-1">
+              <span className="text-xs tracking-widest text-white/40 uppercase whitespace-nowrap shrink-0">{indexLabel} / {String(total).padStart(2, "0")}</span>
+              <div className="flex items-center gap-1 shrink-0">
                 <button type="button" onClick={prev} className="rounded-full p-2 text-white/40 transition-all duration-300 hover:bg-white/5 hover:text-white" aria-label="Previous"><ChevronLeft className="size-5" /></button>
                 <button type="button" onClick={next} className="rounded-full p-2 text-white/40 transition-all duration-300 hover:bg-white/5 hover:text-white" aria-label="Next"><ChevronRight className="size-5" /></button>
               </div>

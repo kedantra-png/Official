@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { ArrowRight, Github } from "lucide-react";
+import { ArrowRight, Github, Mail } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { WavyBackground } from "@/components/ui/wavy-background";
 
@@ -20,8 +20,8 @@ export function PixelHero({
   description = "We design high-performance web systems, custom neural automation pipelines, and native-feeling mobile applications built for scale and uncompromised speed.",
   primaryCta = "Explore Capabilities",
   primaryCtaMobile = "Capabilities",
-  secondaryCta = "View Projects",
-  secondaryCtaMobile = "Projects",
+  secondaryCta,
+  secondaryCtaMobile,
   onPrimaryClick,
   onSecondaryClick,
   githubUrl = "https://github.com",
@@ -80,23 +80,22 @@ export function PixelHero({
             <ArrowRight className="w-4 h-4" />
           </button>
 
-          <a
-            href={githubUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            onClick={onSecondaryClick}
-            className="relative inline-flex items-center justify-center rounded-xl bg-white/5 font-semibold text-white/90 ring-1 ring-white/15 backdrop-blur-md transition-all duration-200 hover:bg-white/10 hover:scale-[1.03] active:scale-[0.98] cursor-pointer"
-            style={{
-              height: "clamp(2.75rem, 2vw + 1.5rem, 3.25rem)",
-              paddingInline: "clamp(1.25rem, 2vw + 0.5rem, 2.25rem)",
-              fontSize: "clamp(0.85rem, 0.6vw + 0.4rem, 0.95rem)",
-              gap: "0.5rem",
-            }}
-          >
-            <Github className="w-4 h-4" />
-            <span className="inline min-[500px]:hidden">{secondaryCtaMobile}</span>
-            <span className="hidden min-[500px]:inline">{secondaryCta}</span>
-          </a>
+          {secondaryCta && (
+            <button
+              onClick={onSecondaryClick}
+              className="relative inline-flex items-center justify-center rounded-xl bg-[#080808] border border-white/15 hover:border-cyan-400/50 hover:bg-black font-semibold text-white/90 shadow-[0_4px_20px_rgba(0,0,0,0.8)] transition-all duration-200 hover:scale-[1.03] active:scale-[0.98] cursor-pointer"
+              style={{
+                height: "clamp(2.75rem, 2vw + 1.5rem, 3.25rem)",
+                paddingInline: "clamp(1.25rem, 2vw + 0.5rem, 2.25rem)",
+                fontSize: "clamp(0.85rem, 0.6vw + 0.4rem, 0.95rem)",
+                gap: "0.5rem",
+              }}
+            >
+              <Mail className="w-4 h-4 text-cyan-400" />
+              <span className="inline min-[500px]:hidden">{secondaryCtaMobile}</span>
+              <span className="hidden min-[500px]:inline">{secondaryCta}</span>
+            </button>
+          )}
         </div>
       </div>
     </WavyBackground>

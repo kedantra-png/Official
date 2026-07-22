@@ -2,43 +2,62 @@
 
 import React, { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
-import { Code2, Smartphone, Cpu, Bot, Instagram, Send, Sparkles, CheckCircle2, MessageCircle } from "lucide-react";
+import { Code2, Smartphone, Cpu, Bot, Instagram, Send, Sparkles, CheckCircle2, MessageCircle, Zap, Shield, TrendingUp, Palette } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
 
 const INITIAL_CHIPS = [
   {
     id: 1,
-    title: "Web Platforms",
-    description: "High-Performance Edge Delivery",
-    icon: Code2,
+    title: "Lightning-Fast Performance",
+    description: "Built for speed and seamless user experience.",
+    icon: Zap,
     glow: "border-amber-400/50 shadow-[0_0_20px_rgba(245,158,11,0.4)] text-amber-300",
   },
   {
     id: 2,
-    title: "Mobile Apps",
-    description: "60fps Native Cross-Platform UI",
-    icon: Smartphone,
-    glow: "border-yellow-400/50 shadow-[0_0_20px_rgba(234,179,8,0.4)] text-yellow-300",
+    title: "Enterprise-Grade Security",
+    description: "Protecting your data with trusted security standards.",
+    icon: Shield,
+    glow: "border-emerald-400/50 shadow-[0_0_20px_rgba(16,185,129,0.4)] text-emerald-300",
   },
   {
     id: 3,
-    title: "AI Solutions",
-    description: "Autonomous LLM Neural Workflows",
-    icon: Bot,
-    glow: "border-amber-500/50 shadow-[0_0_20px_rgba(217,119,6,0.4)] text-amber-200",
+    title: "Scalable Solutions",
+    description: "Designed to grow with your business.",
+    icon: TrendingUp,
+    glow: "border-blue-400/50 shadow-[0_0_20px_rgba(59,130,246,0.4)] text-blue-300",
   },
   {
     id: 4,
-    title: "Hardware Systems",
-    description: "IoT Microcontrollers & Firmware",
-    icon: Cpu,
-    glow: "border-yellow-500/50 shadow-[0_0_20px_rgba(202,138,4,0.4)] text-yellow-200",
+    title: "AI-Powered Innovation",
+    description: "Smart automation for better productivity.",
+    icon: Bot,
+    glow: "border-purple-400/50 shadow-[0_0_20px_rgba(168,85,247,0.4)] text-purple-300",
+  },
+  {
+    id: 5,
+    title: "Modern UI/UX Design",
+    description: "Beautiful, intuitive, and user-focused experiences.",
+    icon: Palette,
+    glow: "border-pink-400/50 shadow-[0_0_20px_rgba(236,72,153,0.4)] text-pink-300",
   },
 ];
 
 function Bucket() {
   const [items, setItems] = useState(INITIAL_CHIPS);
   const isMobile = useIsMobile();
+  const [isWebKit, setIsWebKit] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+    setIsWebKit(
+      typeof window !== "undefined" &&
+        (/iPad|iPhone|iPod/.test(navigator.userAgent) ||
+          (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1) ||
+          (navigator.userAgent.includes("Safari") && !navigator.userAgent.includes("Chrome")))
+    );
+  }, []);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -50,6 +69,10 @@ function Bucket() {
 
     return () => clearInterval(interval);
   }, []);
+
+  if (!mounted) {
+    return <div className="relative w-full aspect-[655/352]" />;
+  }
 
   return (
     <div
@@ -69,11 +92,12 @@ function Bucket() {
           y="-10.5141"
           width="211.24"
           height="166.977"
+          clipPath="url(#bgblur_0_51_65_clip_path)"
         >
           <div
             style={{
-              backdropFilter: "blur(11.03px)",
-              clipPath: "url(#bgblur_0_51_65_clip_path)",
+              backdropFilter: isWebKit ? "none" : "blur(11.03px)",
+              WebkitBackdropFilter: isWebKit ? "none" : "blur(11.03px)",
               height: "100%",
               width: "100%",
             }}
@@ -95,11 +119,12 @@ function Bucket() {
           y="-10.9516"
           width="215.96"
           height="167.786"
+          clipPath="url(#bgblur_1_51_65_clip_path)"
         >
           <div
             style={{
-              backdropFilter: "blur(11.03px)",
-              clipPath: "url(#bgblur_1_51_65_clip_path)",
+              backdropFilter: isWebKit ? "none" : "blur(11.03px)",
+              WebkitBackdropFilter: isWebKit ? "none" : "blur(11.03px)",
               height: "100%",
               width: "100%",
             }}
@@ -121,11 +146,12 @@ function Bucket() {
           y="20.823"
           width="501.297"
           height="136.012"
+          clipPath="url(#bgblur_2_51_65_clip_path)"
         >
           <div
             style={{
-              backdropFilter: "blur(11.03px)",
-              clipPath: "url(#bgblur_2_51_65_clip_path)",
+              backdropFilter: isWebKit ? "none" : "blur(11.03px)",
+              WebkitBackdropFilter: isWebKit ? "none" : "blur(11.03px)",
               height: "100%",
               width: "100%",
             }}
@@ -147,11 +173,12 @@ function Bucket() {
           y="20.823"
           width="137.255"
           height="136.012"
+          clipPath="url(#bgblur_3_51_65_clip_path)"
         >
           <div
             style={{
-              backdropFilter: "blur(11.03px)",
-              clipPath: "url(#bgblur_3_51_65_clip_path)",
+              backdropFilter: isWebKit ? "none" : "blur(11.03px)",
+              WebkitBackdropFilter: isWebKit ? "none" : "blur(11.03px)",
               height: "100%",
               width: "100%",
             }}
@@ -796,19 +823,19 @@ function Bucket() {
                       ease: "easeInOut",
                     },
                   }}
-                  className={`bg-[#0d0c07]/95 border z-10 rounded-full p-2 w-[220px] sm:w-[260px] shadow-lg absolute pointer-events-auto flex items-center gap-2.5 origin-bottom backdrop-blur-xl ${items[0].glow}`}
+                  className={`bg-[#0d0c07]/95 border z-10 rounded-full p-2.5 w-[240px] sm:w-[290px] shadow-lg absolute pointer-events-auto flex items-center gap-2.5 origin-bottom backdrop-blur-xl ${items[0].glow}`}
                 >
-                  <div className="flex size-9 sm:size-10 shrink-0 items-center justify-center rounded-full bg-amber-500/20 border border-amber-400/40 text-amber-300">
+                  <div className="flex size-8 sm:size-9.5 shrink-0 items-center justify-center rounded-full bg-amber-500/20 border border-amber-400/40 text-amber-300">
                     {(() => {
                       const IconComponent = items[0].icon;
-                      return <IconComponent className="size-4 sm:size-5" />;
+                      return <IconComponent className="size-3.5 sm:size-4.5" />;
                     })()}
                   </div>
-                  <div className="flex flex-col gap-0.5">
-                    <span className="text-xs sm:text-sm font-bold text-white leading-none">
+                  <div className="flex flex-col gap-0.5 min-w-0">
+                    <span className="text-[clamp(10.5px,2.2vw,12.5px)] sm:text-[clamp(12px,2.4vw,13.5px)] font-bold text-white leading-tight truncate">
                       {items[0].title}
                     </span>
-                    <span className="text-[9.5px] sm:text-xs text-white/60">
+                    <span className="text-[clamp(8px,1.8vw,9.5px)] sm:text-[clamp(9.5px,2vw,11px)] text-white/60 leading-normal line-clamp-2">
                       {items[0].description}
                     </span>
                   </div>
@@ -842,16 +869,14 @@ function Bucket() {
         </g>
 
         <g clipPath="url(#center_box_clip)">
-          <foreignObject x="0" y="0" width="655" height="352">
+          <foreignObject x="0" y="0" width="655" height="352" clipPath="url(#bgblur_5_51_65_clip_path)">
             <div
               style={{
-                backdropFilter: "blur(60.03px)",
-                WebkitBackdropFilter: "blur(60.03px)",
+                backdropFilter: isWebKit ? "none" : "blur(60.03px)",
+                WebkitBackdropFilter: isWebKit ? "none" : "blur(60.03px)",
                 height: "100%",
                 width: "100%",
                 background: "rgba(234, 179, 8, 0.04)",
-                clipPath:
-                  "path('M74.6011 164.033L123.116 79.1138L535.59 78.7419L581.532 164.469C588.006 176.55 591.243 182.59 588.568 187.06C585.892 191.529 579.039 191.529 565.333 191.529H90.5591C76.4759 191.529 69.4343 191.529 66.7781 186.953C64.1219 182.376 67.615 176.262 74.6011 164.033Z')",
               }}
             ></div>
           </foreignObject>
@@ -872,6 +897,7 @@ function Bucket() {
     </div>
   );
 }
+
 
 export function OordhwaFooter() {
   const [formData, setFormData] = useState({ name: "", email: "", message: "" });
@@ -1047,6 +1073,7 @@ export function OordhwaFooter() {
           transition={{ duration: 0.6, delay: 0.15 }}
           className="w-full lg:w-[38%] max-w-[460px] shrink-0 flex flex-col items-center gap-2.5 self-center"
         >
+
           <h3
             className="font-black-ops text-[clamp(0.875rem,2.8vw,1.75rem)] tracking-[0.18em] text-white/50 uppercase select-none text-center leading-tight"
             style={{
@@ -1066,7 +1093,7 @@ export function OordhwaFooter() {
       </div>
 
       {/* BOTTOM FOOTER BAR: Icon-Only Instagram & WhatsApp Buttons + Copyright */}
-      <div className="relative z-10 mx-auto w-full max-w-[clamp(20rem,92vw,76rem)] px-6 sm:px-12 lg:px-16 pb-6 pt-2">
+      <div className="relative z-10 mx-auto w-full max-w-[clamp(20rem,92vw,76rem)] px-6 sm:px-12 lg:px-16 pb-6 max-[675px]:pb-28 pt-2">
         <div className="w-full border-t border-white/[0.08] pt-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs font-mono text-white/45">
           {/* Copyright text */}
           <span className="text-center sm:text-left">

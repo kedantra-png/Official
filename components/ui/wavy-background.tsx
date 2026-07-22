@@ -111,9 +111,10 @@ export const WavyBackground = ({
     }
   };
 
+  const isIntersectingRef = useRef(true);
   let animationId: number;
   const render = () => {
-    if (!ctx) return;
+    if (!ctx || !isIntersectingRef.current) return;
     ctx.fillStyle = backgroundFill || "black";
     ctx.globalAlpha = waveOpacity || 0.5;
     ctx.fillRect(0, 0, w, h);
@@ -123,6 +124,24 @@ export const WavyBackground = ({
 
   useEffect(() => {
     init();
+
+    const canvasEl = canvasRef.current;
+    let observer: IntersectionObserver | null = null;
+
+    if (canvasEl) {
+      observer = new IntersectionObserver(
+        (entries) => {
+          const [entry] = entries;
+          const wasIntersecting = isIntersectingRef.current;
+          isIntersectingRef.current = entry.isIntersecting;
+          if (entry.isIntersecting && !wasIntersecting) {
+            render();
+          }
+        },
+        { threshold: 0.05 }
+      );
+      observer.observe(canvasEl);
+    }
 
     const handleMouseMove = (e: MouseEvent) => {
       mouseRef.current.targetX = e.clientX;
@@ -134,11 +153,12 @@ export const WavyBackground = ({
       mouseRef.current.targetY = -1000;
     };
 
-    window.addEventListener("mousemove", handleMouseMove);
-    window.addEventListener("mouseleave", handleMouseLeave);
+    window.addEventListener("mousemove", handleMouseMove, { passive: true });
+    window.addEventListener("mouseleave", handleMouseLeave, { passive: true });
 
     return () => {
       cancelAnimationFrame(animationId);
+      if (observer) observer.disconnect();
       window.removeEventListener("mousemove", handleMouseMove);
       window.removeEventListener("mouseleave", handleMouseLeave);
     };

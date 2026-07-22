@@ -1,0 +1,35 @@
+services:
+  official:
+    container_name: official
+
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        - NEXT_PUBLIC_SUPABASE_URL=https://njnjduztkvqnybntyalv.supabase.co
+        - NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=sb_publishable_qVgj9fcMjwysMb950Tw_-w_CprgNvGD
+
+    image: official:latest
+
+    restart: unless-stopped
+
+    ports:
+      - "3001:3000"
+
+    env_file:
+      - .env.local
+
+    environment:
+      NODE_ENV: production
+      NODE_OPTIONS: --dns-result-order=ipv4first
+
+    dns:
+      - 8.8.8.8
+      - 1.1.1.1
+
+    networks:
+      - kedantra-network
+
+networks:
+  kedantra-network:
+    external: true

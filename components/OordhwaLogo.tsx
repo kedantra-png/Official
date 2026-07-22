@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import Image from "next/image";
@@ -9,6 +9,16 @@ export function OordhwaLogo() {
   const pathname = usePathname();
   const isHome = pathname === "/";
   const isAdmin = pathname?.startsWith("/admin");
+
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 20);
+    };
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   if (isAdmin) return null;
 
@@ -26,7 +36,7 @@ export function OordhwaLogo() {
       />
 
       {/* Brand Text — Perfectly Centered */}
-      <div className="hidden sm:flex flex-col items-center justify-center text-center select-none leading-none">
+      <div className="flex flex-col items-center justify-center text-center select-none leading-none">
         {/* Line 1: OORDHWA in Ethnocentric Font with Integrated SVG Letter A */}
         <span className="font-ethnocentric text-base sm:text-lg tracking-[0.14em] text-white leading-none text-center w-full drop-shadow-[0_0_12px_rgba(255,255,255,0.3)] flex items-center justify-center">
           OORDHW
@@ -83,7 +93,13 @@ export function OordhwaLogo() {
   );
 
   return (
-    <div className="fixed top-4 left-4 sm:left-6 md:left-8 z-50 pointer-events-auto">
+    <header
+      className={`fixed top-0 inset-x-0 z-40 transition-all duration-300 py-3 px-4 sm:px-6 md:px-8 flex items-center border-b ${
+        scrolled
+          ? "bg-black/90 backdrop-blur-md border-white/10 shadow-[0_4px_30px_rgba(0,0,0,0.8)]"
+          : "bg-transparent border-transparent"
+      }`}
+    >
       {isHome ? (
         <a href="#home" className="hover:opacity-90 active:scale-95 transition-all duration-300">
           {logoContent}
@@ -93,6 +109,6 @@ export function OordhwaLogo() {
           {logoContent}
         </Link>
       )}
-    </div>
+    </header>
   );
 }

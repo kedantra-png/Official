@@ -1,6 +1,7 @@
 "use client";
 
 import { PixelHero } from "@/components/PixelHero";
+import { lenisRef } from "@/lib/lenis";
 
 export function HeroSection() {
   return (
@@ -9,13 +10,27 @@ export function HeroSection() {
         description="We design high-performance web systems, custom neural automation pipelines, and native-feeling mobile applications built for scale."
         primaryCta="Explore Capabilities"
         primaryCtaMobile="Capabilities"
-        secondaryCta="View Projects"
-        secondaryCtaMobile="Projects"
+        secondaryCta="Connect"
+        secondaryCtaMobile="Connect"
         onPrimaryClick={() => {
-          document.getElementById("capabilities")?.scrollIntoView({ behavior: "smooth" });
+          const el = document.getElementById("capabilities");
+          if (el) {
+            if (lenisRef.current) {
+              lenisRef.current.scrollTo(el);
+            } else {
+              el.scrollIntoView({ behavior: "smooth" });
+            }
+          }
         }}
         onSecondaryClick={() => {
-          document.getElementById("projects")?.scrollIntoView({ behavior: "smooth" });
+          const el = document.getElementById("footer");
+          if (el) {
+            if (lenisRef.current) {
+              lenisRef.current.scrollTo(el);
+            } else {
+              el.scrollIntoView({ behavior: "smooth" });
+            }
+          }
         }}
       />
     </section>

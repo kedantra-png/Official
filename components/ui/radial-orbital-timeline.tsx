@@ -237,6 +237,9 @@ export default function RadialOrbitalTimeline({
     return relatedItems.includes(itemId);
   };
 
+  const activeItem = activeNodeId !== null && activeNodeId !== undefined ? timelineData.find((i) => i.id === activeNodeId) : null;
+  const activeTheme = activeItem ? (PHASE_COLORS[activeItem.id] ?? PHASE_COLORS[1]) : null;
+
   return (
     <div
       className={`flex h-full w-full flex-col items-center justify-center overflow-visible ${className}`}
@@ -356,88 +359,87 @@ export default function RadialOrbitalTimeline({
                   >
                     {item.title}
                   </div>
-
-                  {/* Interactive Glass Detail Popup */}
-                  {isActive && (
-                    <Card className="absolute top-16 left-1/2 w-[clamp(12rem,75vw,16rem)] max-h-[240px] -translate-x-1/2 overflow-y-auto border-cyan-500/40 bg-black/95 text-white shadow-[0_0_30px_rgba(6,182,212,0.3)] backdrop-blur-2xl z-50 pointer-events-auto select-none rounded-2xl">
-                      <div className="absolute -top-3 left-1/2 h-3 w-0.5 -translate-x-1/2 bg-cyan-400" />
-                      <CardHeader className="pb-1.5 px-3.5 pt-3.5">
-                        <div className="flex items-center justify-between">
-                          <Badge
-                            className={`px-2 py-0.5 text-[8.5px] font-mono leading-none border uppercase tracking-wider ${theme.text} bg-cyan-950/60 border-cyan-400/40`}
-                          >
-                            {item.date} — {item.status}
-                          </Badge>
-                          <span className="font-mono text-[8px] text-cyan-300/80 font-bold">
-                            PHASE 0{item.id}
-                          </span>
-                        </div>
-                        <CardTitle className={`mt-1.5 text-xs font-bold font-heading ${theme.text}`}>
-                          {item.title}
-                        </CardTitle>
-                      </CardHeader>
-                      <CardContent className="text-[9.5px] text-white/80 px-3.5 pb-3.5 pt-0">
-                        <p className="leading-relaxed font-light">{item.content}</p>
-
-                        {/* Energy Level Bar */}
-                        <div className="mt-3 border-t border-white/10 pt-2.5">
-                          <div className="mb-1 flex items-center justify-between text-[9px]">
-                            <span className="flex items-center text-cyan-300 font-mono">
-                              <Zap size={9} className="mr-1 text-yellow-400 animate-bounce" />
-                              Phase Momentum
-                            </span>
-                            <span className="font-mono font-bold text-white">{item.energy}%</span>
-                          </div>
-                          <div className="h-1.5 w-full overflow-hidden rounded-full bg-white/10 border border-white/10">
-                            <div
-                              className={`h-full bg-gradient-to-r ${theme.gradient}`}
-                              style={{ width: `${item.energy}%` }}
-                            />
-                          </div>
-                        </div>
-
-                        {item.relatedIds.length > 0 && (
-                          <div className="mt-2.5 border-t border-white/10 pt-2">
-                            <div className="mb-1 flex items-center">
-                              <Link size={8} className="mr-1 text-cyan-400" />
-                              <h4 className="text-[8px] font-mono font-semibold tracking-wider text-cyan-300 uppercase">
-                                Connected Next Steps
-                              </h4>
-                            </div>
-                            <div className="flex flex-wrap gap-1">
-                              {item.relatedIds.map((relatedId) => {
-                                const relatedItem = timelineData.find(
-                                  (i) => i.id === relatedId,
-                                );
-                                return (
-                                  <Button
-                                    key={relatedId}
-                                    variant="outline"
-                                    size="sm"
-                                    className="flex h-5 items-center rounded-md border-cyan-500/30 bg-cyan-950/40 px-2 py-0 text-[8px] text-cyan-200 transition-all hover:bg-cyan-500/20 hover:border-cyan-400"
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      toggleItem(relatedId);
-                                    }}
-                                  >
-                                    {relatedItem?.title}
-                                    <ArrowRight
-                                      size={7}
-                                      className="ml-1 text-cyan-400"
-                                    />
-                                  </Button>
-                                );
-                              })}
-                            </div>
-                          </div>
-                        )}
-                      </CardContent>
-                    </Card>
-                  )}
                 </div>
               );
             })}
         </div>
+
+        {/* Centered Glass Detail Popup */}
+        {activeItem && activeTheme && (
+          <Card className="absolute z-50 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[clamp(13.5rem,80vw,17.5rem)] max-h-[220px] overflow-y-auto border-cyan-500/40 bg-black/95 text-white shadow-[0_0_35px_rgba(6,182,212,0.45)] backdrop-blur-2xl pointer-events-auto select-none rounded-2xl">
+            <CardHeader className="pb-1.5 px-3.5 pt-3.5">
+              <div className="flex items-center justify-between">
+                <Badge
+                  className={`px-2 py-0.5 text-[8.5px] font-mono leading-none border uppercase tracking-wider ${activeTheme.text} bg-cyan-950/60 border-cyan-400/40`}
+                >
+                  {activeItem.date} — {activeItem.status}
+                </Badge>
+                <span className="font-mono text-[8px] text-cyan-300/80 font-bold">
+                  PHASE 0{activeItem.id}
+                </span>
+              </div>
+              <CardTitle className={`mt-1.5 text-xs font-bold font-heading ${activeTheme.text}`}>
+                {activeItem.title}
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="text-[9.5px] text-white/80 px-3.5 pb-3.5 pt-0">
+              <p className="leading-relaxed font-light">{activeItem.content}</p>
+
+              {/* Energy Level Bar */}
+              <div className="mt-3 border-t border-white/10 pt-2.5">
+                <div className="mb-1 flex items-center justify-between text-[9px]">
+                  <span className="flex items-center text-cyan-300 font-mono">
+                    <Zap size={9} className="mr-1 text-yellow-400 animate-bounce" />
+                    Phase Momentum
+                  </span>
+                  <span className="font-mono font-bold text-white">{activeItem.energy}%</span>
+                </div>
+                <div className="h-1.5 w-full overflow-hidden rounded-full bg-white/10 border border-white/10">
+                  <div
+                    className={`h-full bg-gradient-to-r ${activeTheme.gradient}`}
+                    style={{ width: `${activeItem.energy}%` }}
+                  />
+                </div>
+              </div>
+
+              {activeItem.relatedIds.length > 0 && (
+                <div className="mt-2.5 border-t border-white/10 pt-2">
+                  <div className="mb-1 flex items-center">
+                    <Link size={8} className="mr-1 text-cyan-400" />
+                    <h4 className="text-[8px] font-mono font-semibold tracking-wider text-cyan-300 uppercase">
+                      Connected Next Steps
+                    </h4>
+                  </div>
+                  <div className="flex flex-wrap gap-1">
+                    {activeItem.relatedIds.map((relatedId) => {
+                      const relatedItem = timelineData.find(
+                        (i) => i.id === relatedId,
+                      );
+                      return (
+                        <Button
+                          key={relatedId}
+                          variant="outline"
+                          size="sm"
+                          className="flex h-5 items-center rounded-md border-cyan-500/30 bg-cyan-950/40 px-2 py-0 text-[8px] text-cyan-200 transition-all hover:bg-cyan-500/20 hover:border-cyan-400"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            toggleItem(relatedId);
+                          }}
+                        >
+                          {relatedItem?.title}
+                          <ArrowRight
+                            size={7}
+                            className="ml-1 text-cyan-400"
+                          />
+                        </Button>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        )}
       </div>
     </div>
   );

@@ -5,6 +5,8 @@ import { motion } from "motion/react";
 import { Home, Eye, Briefcase, Layers, Mail, MessageSquareQuote } from "lucide-react";
 import { KedantraLogo } from "@/components/KedantraLogo";
 
+import { lenisRef } from "@/lib/lenis";
+
 const navItems = [
   { id: "home", icon: Home, label: "Home" },
   { id: "vision", icon: Eye, label: "Vision" },
@@ -40,10 +42,22 @@ export function MobileNav() {
         {navItems.map((item) => {
           const Icon = item.icon;
           const isActive = active === item.id;
+          const targetHref = `#${item.id}`;
           return (
             <a
               key={item.id}
-              href={(item as { href?: string }).href ?? `#${item.id}`}
+              href={targetHref}
+              onClick={(e) => {
+                e.preventDefault();
+                const el = document.getElementById(item.id);
+                if (el) {
+                  if (lenisRef.current) {
+                    lenisRef.current.scrollTo(el);
+                  } else {
+                    el.scrollIntoView({ behavior: "smooth" });
+                  }
+                }
+              }}
               className="relative flex flex-col items-center group px-2 py-1"
             >
               <motion.div

@@ -7,7 +7,7 @@ const faqs = [
   {
     question: "What services does Oordhwa Tech Solutions specialize in?",
     answer:
-      "Oordhwa specializes in engineering high-performance web platforms, autonomous AI agent integrations, custom cloud architectures, 60fps cross-platform mobile apps, and bank-grade data security systems.",
+      "Oordhwa Tech Solutions delivers end-to-end digital solutions, including web development, mobile apps, AI integration, cloud services, and user-focused UI/UX design.",
   },
   {
     question: "How does Oordhwa integrate AI into existing business software?",
@@ -17,7 +17,7 @@ const faqs = [
   {
     question: "What is the typical timeline for project development?",
     answer:
-      "Targeted features or AI integrations are delivered in 1–2 weeks, while full-scale enterprise web applications and mobile products typically range from 4 to 8 weeks with continuous milestone demos.",
+      "Project timelines depend on the scope and complexity. Smaller projects typically take 2–4 weeks, while larger web or mobile applications are usually completed within 6–12 weeks, with regular updates and milestone reviews throughout the process.",
   },
   {
     question: "How do you guarantee data security and system uptime?",

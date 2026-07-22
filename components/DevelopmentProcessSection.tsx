@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
   Calendar,
   Code,
@@ -12,6 +12,12 @@ import RadialOrbitalTimeline, {
   type TimelineItem,
 } from "@/components/ui/radial-orbital-timeline";
 import { DevelopmentPipeline } from "@/components/DevelopmentPipeline";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+
+if (typeof window !== "undefined") {
+  gsap.registerPlugin(ScrollTrigger);
+}
 
 const developmentTimeline: TimelineItem[] = [
   {
@@ -80,10 +86,71 @@ export function DevelopmentProcessSection() {
   const [timelineActiveNodeId, setTimelineActiveNodeId] = useState<number | null>(null);
   const [pipelineActiveNodeId, setPipelineActiveNodeId] = useState<number | null>(null);
 
+  const headerRef = useRef<HTMLDivElement>(null);
+  const middleRef = useRef<HTMLDivElement>(null);
+  const bottomRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const ctx = gsap.context(() => {
+      // Header transition
+      gsap.fromTo(
+        headerRef.current,
+        { opacity: 0, y: -25 },
+        {
+          opacity: 1,
+          y: 0,
+          duration: 0.8,
+          ease: "power2.out",
+          scrollTrigger: {
+            trigger: headerRef.current,
+            start: "top 85%",
+            toggleActions: "play none none none",
+          },
+        }
+      );
+
+      // Orbital timeline transition (scale & fade in)
+      gsap.fromTo(
+        middleRef.current,
+        { opacity: 0, scale: 0.85 },
+        {
+          opacity: 1,
+          scale: 1,
+          duration: 1.0,
+          ease: "back.out(1.2)",
+          scrollTrigger: {
+            trigger: middleRef.current,
+            start: "top 80%",
+            toggleActions: "play none none none",
+          },
+        }
+      );
+
+      // Bottom step pipeline transition (slide up)
+      gsap.fromTo(
+        bottomRef.current,
+        { opacity: 0, y: 40 },
+        {
+          opacity: 1,
+          y: 0,
+          duration: 0.9,
+          ease: "power2.out",
+          scrollTrigger: {
+            trigger: bottomRef.current,
+            start: "top 92%",
+            toggleActions: "play none none none",
+          },
+        }
+      );
+    });
+
+    return () => ctx.revert();
+  }, []);
+
   return (
     <section
       id="process"
-      className="h-screen max-h-[100vh] min-h-[580px] bg-black relative flex flex-col justify-between overflow-hidden pt-[clamp(1rem,3vh,2rem)] pb-14 select-none"
+      className="h-screen max-h-[100vh] min-h-[580px] max-[768px]:h-auto max-[768px]:max-h-none bg-black relative flex flex-col justify-between overflow-hidden pt-[clamp(1rem,3vh,2rem)] pb-14 max-[768px]:py-16 select-none"
     >
       {/* Dynamic Background Ambient Light Orbs */}
       <div className="absolute top-1/4 left-1/4 w-[450px] h-[450px] bg-cyan-500/10 rounded-full blur-[140px] pointer-events-none" />
@@ -98,7 +165,7 @@ export function DevelopmentProcessSection() {
         }}
       />
 
-      <header className="relative z-20 shrink-0 px-4 text-center">
+      <header ref={headerRef} className="relative z-20 shrink-0 px-4 text-center opacity-0 mb-6 md:mb-10 lg:mb-14">
         <p className="text-[10px] sm:text-xs font-semibold uppercase tracking-[0.3em] text-cyan-400 mb-1">
           How We Deliver
         </p>
@@ -108,10 +175,10 @@ export function DevelopmentProcessSection() {
       </header>
 
       {/* Middle Container for the Orbital Circle */}
-      <div className="relative flex-1 flex items-center justify-center px-4 min-h-0 z-30">
-        <div className="w-full max-w-xl h-[clamp(280px,58vh,520px)] flex items-center justify-center relative -translate-y-8 md:translate-y-0">
+      <div ref={middleRef} className="relative flex-1 flex items-center justify-center px-4 pb-4 md:pb-0 min-h-0 z-30 opacity-0">
+        <div className="w-full max-w-xl h-[clamp(260px,46vh,440px)] flex items-center justify-center relative md:translate-y-0 max-[768px]:mb-16">
           <RadialOrbitalTimeline 
-            timelineData={developmentTimeline} 
+            timelineData={developmentTimeline}
             activeNodeId={timelineActiveNodeId}
             setActiveNodeId={setTimelineActiveNodeId}
             pipelineActiveNodeId={pipelineActiveNodeId}
@@ -121,11 +188,11 @@ export function DevelopmentProcessSection() {
       </div>
 
       {/* Bottom Container for the Pipeline Stepper Marquee */}
-      <div className="w-full shrink-0 z-10">
-        <DevelopmentPipeline 
-          timelineData={developmentTimeline} 
-          activeNodeId={pipelineActiveNodeId} 
-          setActiveNodeId={setPipelineActiveNodeId} 
+      <div ref={bottomRef} className="w-full shrink-0 z-10 opacity-0">
+        <DevelopmentPipeline
+          timelineData={developmentTimeline}
+          activeNodeId={pipelineActiveNodeId}
+          setActiveNodeId={setPipelineActiveNodeId}
           isTimelinePopupOpen={timelineActiveNodeId !== null}
         />
       </div>
