@@ -1255,6 +1255,26 @@ export default function AdminPage() {
     setToast({ msg, type });
   }, []);
 
+  // Verify authentication state on mount
+  useEffect(() => {
+    fetch("/api/admin/verify")
+      .then((r) => {
+        if (r.ok) setAuthenticated(true);
+        else setAuthenticated(false);
+      })
+      .catch(() => setAuthenticated(false));
+  }, []);
+
+  const handleSignOut = async () => {
+    try {
+      await fetch("/api/admin/logout", { method: "POST" });
+    } catch {
+      // ignore
+    } finally {
+      setAuthenticated(false);
+    }
+  };
+
   // Load stats when authenticated
   useEffect(() => {
     if (!authenticated) return;
@@ -1367,7 +1387,7 @@ export default function AdminPage() {
             </nav>
             <div className="mt-auto">
               <button
-                onClick={() => setAuthenticated(false)}
+                onClick={handleSignOut}
                 className="w-full flex items-center gap-2 rounded-lg px-3 py-2.5 text-xs font-medium text-black/30 hover:text-black/60 hover:bg-black/[0.03] transition-colors"
               >
                 <X className="size-3.5" /> Sign out

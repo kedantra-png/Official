@@ -1,17 +1,13 @@
 import { NextResponse } from "next/server";
-import { cookies } from "next/headers";
 import { createSupabaseAdminClient } from "@/lib/supabase/server";
+import { authenticateAdminGuard } from "@/lib/auth";
 import { v4 as uuidv4 } from "uuid";
 
 export async function POST(request: Request) {
+  const authError = await authenticateAdminGuard(request);
+  if (authError) return authError;
+
   try {
-    const referer = request.headers.get("referer") ?? "";
-    const isAdmin = referer.includes("/admin");
-
-    if (!isAdmin) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
     const formData = await request.formData();
     const file = formData.get("file") as File | null;
 
@@ -38,7 +34,10 @@ export async function POST(request: Request) {
 
     if (error) {
       console.error("Storage upload error:", error);
-      return NextResponse.json({ error: "Upload failed. Please check file size and format." }, { status: 500 });
+      return NextResponse.json(
+        { error: "Upload failed. Please check file size and format." },
+        { status: 500 },
+      );
     }
 
     // Get public URL
@@ -47,8 +46,11 @@ export async function POST(request: Request) {
       .getPublicUrl(data.path);
 
     return NextResponse.json({ url: publicUrlData.publicUrl });
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error("Upload handler error:", err);
-    return NextResponse.json({ error: "Internal server error during media upload." }, { status: 500 });
+    return NextResponse.json(
+      { error: "Internal server error during media upload." },
+      { status: 500 },
+    );
   }
 }

@@ -1,24 +1,19 @@
 import { createSupabaseAdminClient } from "@/lib/supabase/server";
+import { authenticateAdminGuard } from "@/lib/auth";
 import { NextResponse } from "next/server";
-
-function guardAdmin(request: Request) {
-  const referer = request.headers.get("referer") ?? "";
-  if (!referer.includes("/admin")) {
-    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
-  }
-  return null;
-}
 
 // GET /api/admin/inquiries — fetch all contact form submissions (Admin only)
 export async function GET(request: Request) {
-  const guard = guardAdmin(request);
-  if (guard) return guard;
+  const authError = await authenticateAdminGuard(request);
+  if (authError) return authError;
 
   try {
     const supabase = createSupabaseAdminClient();
     const { data, error } = await supabase
       .from("contact_inquiries")
-      .select("id, name, phone, email, inquiry_type, message, status, source, created_at, updated_at")
+      .select(
+        "id, name, phone, email, inquiry_type, message, status, source, created_at, updated_at",
+      )
       .order("created_at", { ascending: false });
 
     if (error) throw error;
@@ -26,14 +21,17 @@ export async function GET(request: Request) {
   } catch (err) {
     const msg = err instanceof Error ? err.message : "Unknown error";
     console.error("[admin/inquiries GET]", msg);
-    return NextResponse.json({ error: "Failed to fetch contact inquiries.", inquiries: [] }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to fetch contact inquiries.", inquiries: [] },
+      { status: 500 },
+    );
   }
 }
 
 // PATCH /api/admin/inquiries — update inquiry status (e.g. mark read or resolved)
 export async function PATCH(request: Request) {
-  const guard = guardAdmin(request);
-  if (guard) return guard;
+  const authError = await authenticateAdminGuard(request);
+  if (authError) return authError;
 
   let body: { id?: string; status?: "new" | "read" | "resolved" };
   try {
@@ -63,14 +61,17 @@ export async function PATCH(request: Request) {
   } catch (err) {
     const msg = err instanceof Error ? err.message : "Unknown error";
     console.error("[admin/inquiries PATCH]", msg);
-    return NextResponse.json({ error: "Failed to update inquiry status." }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to update inquiry status." },
+      { status: 500 },
+    );
   }
 }
 
 // DELETE /api/admin/inquiries — delete an inquiry by id
 export async function DELETE(request: Request) {
-  const guard = guardAdmin(request);
-  if (guard) return guard;
+  const authError = await authenticateAdminGuard(request);
+  if (authError) return authError;
 
   let body: { id?: string };
   try {
@@ -95,6 +96,9 @@ export async function DELETE(request: Request) {
   } catch (err) {
     const msg = err instanceof Error ? err.message : "Unknown error";
     console.error("[admin/inquiries DELETE]", msg);
-    return NextResponse.json({ error: "Failed to delete inquiry." }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to delete inquiry." },
+      { status: 500 },
+    );
   }
 }
