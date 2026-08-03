@@ -51,7 +51,20 @@ export async function POST(request: Request) {
         error.message?.includes("crypt") &&
         (error.message?.includes("Illegal salt") ||
           error.message?.includes("error"));
+      const isNetworkError =
+        error.message?.includes("fetch failed") ||
+        error.message?.includes("EAI_AGAIN") ||
+        (typeof error.details === "string" && error.details.includes("EAI_AGAIN"));
 
+      if (isNetworkError) {
+        return NextResponse.json(
+          {
+            error:
+              "Unable to reach Supabase database (DNS / Network Timeout). Please check your internet connection.",
+          },
+          { status: 503 },
+        );
+      }
       if (isMissingFn) {
         return NextResponse.json(
           {
@@ -86,7 +99,7 @@ export async function POST(request: Request) {
     }
 
     if (data === true) {
-      const token = signJwtToken({ email, role: "admin" }, 86400);
+      const token = await signJwtToken({ email, role: "admin" }, 86400);
 
       const cookieStore = await cookies();
       cookieStore.set("admin_token", token, {
@@ -105,8 +118,18 @@ export async function POST(request: Request) {
     }
 
     return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
-  } catch (err) {
+  } catch (err: unknown) {
     console.error("[admin-login] Server error:", err);
+    const msg = err instanceof Error ? err.message : String(err);
+    if (msg.includes("fetch failed") || msg.includes("EAI_AGAIN")) {
+      return NextResponse.json(
+        {
+          error:
+            "Network error connecting to Supabase. Please check your internet connection.",
+        },
+        { status: 503 },
+      );
+    }
     return NextResponse.json(
       { error: "Server configuration error." },
       { status: 500 },

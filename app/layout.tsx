@@ -3,6 +3,7 @@ import { Cinzel, Inter, Poppins, Share_Tech_Mono } from "next/font/google";
 import localFont from "next/font/local";
 import { SmoothScroll } from "@/components/SmoothScroll";
 import { OordhwaLogo } from "@/components/OordhwaLogo";
+import "@/lib/sync-icons-server";
 import "./globals.css";
 
 const cinzel = Cinzel({

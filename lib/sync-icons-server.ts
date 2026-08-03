@@ -1,52 +1,42 @@
 import fs from "fs";
 import path from "path";
 import sharp from "sharp";
-import { NextResponse } from "next/server";
 
-export async function GET() {
+export async function ensureTransparentIcons() {
   try {
     const cwd = process.cwd();
     const sourcePath = path.join(cwd, "public", "oordhwa-icon.png");
+    const flagFile = path.join(cwd, ".icon-processed-v3");
 
-    if (!fs.existsSync(sourcePath)) {
-      return NextResponse.json(
-        { error: "Source oordhwa-icon.png not found" },
-        { status: 404 },
-      );
-    }
+    if (fs.existsSync(flagFile)) return;
 
-    // Process image with sharp to remove light grey/white background pixels
+    if (!fs.existsSync(sourcePath)) return;
+
     const image = sharp(sourcePath);
     const { data, info } = await image
       .ensureAlpha()
       .raw()
       .toBuffer({ resolveWithObject: true });
 
-    // Loop through pixels and convert near-white/grey pixels to transparent alpha 0
+    // Remove any grey/white square background pixels (R > 200, G > 200, B > 200)
     for (let i = 0; i < data.length; i += 4) {
       const r = data[i];
       const g = data[i + 1];
       const b = data[i + 2];
 
-      // Remove light grey background (R > 215, G > 215, B > 215)
       if (
-        r > 215 &&
-        g > 215 &&
-        b > 215 &&
-        Math.abs(r - g) < 20 &&
-        Math.abs(g - b) < 20
+        r > 200 &&
+        g > 200 &&
+        b > 200 &&
+        Math.abs(r - g) < 25 &&
+        Math.abs(g - b) < 25
       ) {
-        data[i + 3] = 0; // Set alpha channel to 0
+        data[i + 3] = 0; // 100% transparent
       }
     }
 
-    // Save 512x512 transparent PNG
     const transparentBuffer = await sharp(data, {
-      raw: {
-        width: info.width,
-        height: info.height,
-        channels: 4,
-      },
+      raw: { width: info.width, height: info.height, channels: 4 },
     })
       .trim()
       .resize(512, 512, {
@@ -72,14 +62,11 @@ export async function GET() {
       fs.writeFileSync(target, transparentBuffer);
     }
 
-    return NextResponse.json({
-      ok: true,
-      count: targets.length,
-      message:
-        "Successfully stripped background, trimmed padding, and saved transparent icons!",
-    });
-  } catch (err: unknown) {
-    const msg = err instanceof Error ? err.message : "Unknown error";
-    return NextResponse.json({ error: msg }, { status: 500 });
+    fs.writeFileSync(flagFile, "done");
+  } catch (err) {
+    console.error("Icon transparent sync error:", err);
   }
 }
+
+// Auto execute on import
+ensureTransparentIcons();

@@ -36,7 +36,7 @@ export async function verifyAdminRequest(
     return null;
   }
 
-  const payload = verifyJwtToken<AdminTokenPayload>(token);
+  const payload = await verifyJwtToken<AdminTokenPayload>(token);
   if (!payload || payload.role !== "admin") {
     return null;
   }
