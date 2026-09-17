@@ -13,6 +13,7 @@ try {
 }
 
 const nextConfig: NextConfig = {
+  output: "standalone",
   allowedDevOrigins: ['*.ngrok-free.app', "192.168.1.2"],
   images: {
     remotePatterns: [
