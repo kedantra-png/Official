@@ -2,6 +2,7 @@ import { mapRowToCard } from "@/lib/customer-experiences";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import type { CustomerExperienceRow } from "@/lib/types/customer-experience";
 import { validateCustomerExperienceForm } from "@/lib/validation/customer-experience";
+import { getClientIp, checkReviewSubmissionRateLimit } from "@/lib/rate-limit";
 import { NextResponse } from "next/server";
 
 export async function GET() {
@@ -35,6 +36,27 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
+  const ip = getClientIp(request);
+  const rateLimit = checkReviewSubmissionRateLimit(ip);
+
+  if (!rateLimit.allowed) {
+    const minutes = Math.max(1, Math.ceil(rateLimit.retryAfterSeconds / 60));
+    return NextResponse.json(
+      {
+        error: `Submission limit reached for this IP. Please wait ${minutes} minute(s) before submitting another review.`,
+        retryAfter: rateLimit.retryAfterSeconds,
+      },
+      {
+        status: 429,
+        headers: {
+          "Retry-After": String(rateLimit.retryAfterSeconds),
+          "X-RateLimit-Limit": String(rateLimit.limit),
+          "X-RateLimit-Remaining": "0",
+        },
+      },
+    );
+  }
+
   let body: unknown;
 
   try {

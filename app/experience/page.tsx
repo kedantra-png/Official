@@ -3,8 +3,8 @@ import { OordhwaFooter } from "@/components/OordhwaFooter";
 import { ExperiencePageClient } from "./ExperiencePageClient";
 
 export const metadata = {
-  title: "Customer Experiences | Oordhwa Tech Solutions (Urdhva Tech)",
-  description: "Real stories and reviews from teams we work with. Share how OORDHWA (Urdhva Tech Solutions) helped transform your project.",
+  title: "Customer Experiences | Oordhwa Tech Solutions",
+  description: "Real stories and reviews from teams we work with. Share how OORDHWA helped transform your project.",
   keywords: [
     "Customer Experiences",
     "Oordhwa Reviews",

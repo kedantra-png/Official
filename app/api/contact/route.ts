@@ -1,7 +1,29 @@
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { getClientIp, checkContactRateLimit } from "@/lib/rate-limit";
 import { NextResponse } from "next/server";
 
 export async function POST(request: Request) {
+  const ip = getClientIp(request);
+  const rateLimit = checkContactRateLimit(ip);
+
+  if (!rateLimit.allowed) {
+    const minutes = Math.max(1, Math.ceil(rateLimit.retryAfterSeconds / 60));
+    return NextResponse.json(
+      {
+        error: `Submission limit reached for this IP. Please wait ${minutes} minute(s) before sending another inquiry.`,
+        retryAfter: rateLimit.retryAfterSeconds,
+      },
+      {
+        status: 429,
+        headers: {
+          "Retry-After": String(rateLimit.retryAfterSeconds),
+          "X-RateLimit-Limit": String(rateLimit.limit),
+          "X-RateLimit-Remaining": "0",
+        },
+      },
+    );
+  }
+
   let body: unknown;
 
   try {

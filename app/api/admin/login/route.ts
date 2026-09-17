@@ -1,19 +1,49 @@
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { signJwtToken } from "@/lib/jwt";
+import {
+  getClientIp,
+  checkAdminLoginLockout,
+  recordFailedAdminLogin,
+  resetAdminLoginAttempts,
+} from "@/lib/rate-limit";
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 
 export async function POST(request: Request) {
+  const ip = getClientIp(request);
+
+  // 1. Check if the IP is currently locked out due to previous failed attempts
+  const rateLimit = checkAdminLoginLockout(ip);
+  if (!rateLimit.allowed) {
+    const minutes = Math.max(1, Math.ceil(rateLimit.retryAfterSeconds / 60));
+    return NextResponse.json(
+      {
+        error: `Too many failed login attempts. For security, your IP is temporarily blocked. Please try again after ${minutes} minute(s).`,
+        retryAfter: rateLimit.retryAfterSeconds,
+      },
+      {
+        status: 429,
+        headers: {
+          "Retry-After": String(rateLimit.retryAfterSeconds),
+          "X-RateLimit-Limit": String(rateLimit.limit),
+          "X-RateLimit-Remaining": "0",
+        },
+      },
+    );
+  }
+
   let body: { email?: string; password?: string; route?: string };
   try {
     body = await request.json();
   } catch {
+    recordFailedAdminLogin(ip);
     return NextResponse.json({ error: "Invalid request" }, { status: 400 });
   }
 
   const { email, password, route } = body;
 
   if (!email || !password) {
+    recordFailedAdminLogin(ip);
     return NextResponse.json(
       { error: "Email and password required" },
       { status: 400 },
@@ -21,6 +51,7 @@ export async function POST(request: Request) {
   }
 
   if (route !== "/admin") {
+    recordFailedAdminLogin(ip);
     return NextResponse.json({ error: "Invalid route" }, { status: 403 });
   }
 
@@ -99,6 +130,9 @@ export async function POST(request: Request) {
     }
 
     if (data === true) {
+      // Successful authentication clears failed attempt history for this IP
+      resetAdminLoginAttempts(ip);
+
       const token = await signJwtToken({ email, role: "admin" }, 86400);
 
       const cookieStore = await cookies();
@@ -117,7 +151,24 @@ export async function POST(request: Request) {
       });
     }
 
-    return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
+    recordFailedAdminLogin(ip);
+    const postCheck = checkAdminLoginLockout(ip);
+    const attemptsLeft = postCheck.remaining;
+    const warningMsg =
+      attemptsLeft > 0
+        ? ` (${attemptsLeft} attempt${attemptsLeft === 1 ? "" : "s"} remaining)`
+        : " (Too many failed attempts. Your IP has been temporarily locked for 15 minutes)";
+
+    return NextResponse.json(
+      { error: `Invalid credentials${warningMsg}` },
+      {
+        status: 401,
+        headers: {
+          "X-RateLimit-Limit": String(postCheck.limit),
+          "X-RateLimit-Remaining": String(attemptsLeft),
+        },
+      },
+    );
   } catch (err: unknown) {
     console.error("[admin-login] Server error:", err);
     const msg = err instanceof Error ? err.message : String(err);

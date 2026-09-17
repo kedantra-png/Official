@@ -1001,7 +1001,7 @@ function InquiriesTab({ onToast }: { onToast: (msg: string, t: "ok" | "err") => 
   }, [onToast]);
 
   useEffect(() => { fetchInquiries(); }, [fetchInquiries]);
-  
+
   const exportToExcel = () => {
     if (inquiries.length === 0) {
       onToast("No inquiries to export", "err");
@@ -1010,7 +1010,7 @@ function InquiriesTab({ onToast }: { onToast: (msg: string, t: "ok" | "err") => 
 
     // Prepare headers
     const headers = ["Inquiry ID", "Phone Number", "Email Address", "Type", "Message Content", "Status", "Source", "Date Received"];
-    
+
     // Map rows and escape quotes/newlines
     const rows = inquiries.map((inq) => [
       inq.id,
@@ -1171,16 +1171,14 @@ function InquiriesTab({ onToast }: { onToast: (msg: string, t: "ok" | "err") => 
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-semibold ${
-                    inq.status === "resolved"
+                  <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-semibold ${inq.status === "resolved"
                       ? "bg-emerald-50 text-emerald-600 border border-emerald-100"
                       : inq.status === "read"
-                      ? "bg-blue-50 text-blue-600 border border-blue-100"
-                      : "bg-amber-50 text-amber-600 border border-amber-100"
-                  }`}>
-                    <span className={`size-1.5 rounded-full ${
-                      inq.status === "resolved" ? "bg-emerald-500" : inq.status === "read" ? "bg-blue-500" : "bg-amber-400"
-                    }`} />
+                        ? "bg-blue-50 text-blue-600 border border-blue-100"
+                        : "bg-amber-50 text-amber-600 border border-amber-100"
+                    }`}>
+                    <span className={`size-1.5 rounded-full ${inq.status === "resolved" ? "bg-emerald-500" : inq.status === "read" ? "bg-blue-500" : "bg-amber-400"
+                      }`} />
                     {inq.status.toUpperCase()}
                   </span>
                   <span className="text-[10px] text-black/40">{fmtDate(inq.created_at)}</span>
@@ -1198,11 +1196,10 @@ function InquiriesTab({ onToast }: { onToast: (msg: string, t: "ok" | "err") => 
                     <button
                       key={st}
                       onClick={() => handleUpdateStatus(inq.id, st)}
-                      className={`px-2 py-0.5 rounded text-[10px] font-medium transition-colors ${
-                        inq.status === st
+                      className={`px-2 py-0.5 rounded text-[10px] font-medium transition-colors ${inq.status === st
                           ? "bg-black text-white"
                           : "bg-black/5 text-black/50 hover:bg-black/10"
-                      }`}
+                        }`}
                     >
                       {st}
                     </button>
@@ -1501,7 +1498,7 @@ export default function AdminPage() {
                 <label className="block text-xs text-black/50 mb-1.5 uppercase tracking-wider">Email</label>
                 <input type="email" value={email} onChange={e => setEmail(e.target.value)}
                   className="w-full rounded-lg border border-black/10 bg-black/[0.02] px-3.5 py-2.5 text-sm text-black outline-none focus:border-black/30 transition-colors placeholder:text-black/20"
-                  placeholder="oordhwa2026@gmail.com" required />
+                  placeholder="xyz@example.com" required />
               </div>
               <div>
                 <label className="block text-xs text-black/50 mb-1.5 uppercase tracking-wider">Password</label>

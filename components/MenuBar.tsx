@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { motion, AnimatePresence } from "motion/react";
-import { Home, Eye, Briefcase, Layers, Mail, MessageSquareQuote } from "lucide-react";
+import { Home, Eye, Cpu, Mail, MessageSquareQuote } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { lenisRef } from "@/lib/lenis";
 
@@ -101,7 +101,7 @@ export function MenuBar({ items, scrollActiveIndex = -1, className, ...props }: 
                   >
                     {/* Pinpoint Triangle pointing up/down */}
                     <div className="w-2 h-2 rotate-45 bg-[#0a0a0a] border-l border-t border-cyan-500/35 -mb-1 max-[675px]:mb-0 max-[675px]:-mt-1 max-[675px]:border-l-0 max-[675px]:border-t-0 max-[675px]:border-r max-[675px]:border-b z-10" />
-                    
+
                     {/* Tooltip Card */}
                     <div className="px-3.5 py-1.5 rounded-xl bg-[#0a0a0a]/95 border border-cyan-500/35 shadow-[0_4px_20px_rgba(6,182,212,0.3),0_0_12px_rgba(255,255,255,0.01)_inset] backdrop-blur-xl flex items-center gap-1.5 whitespace-nowrap">
                       <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 shadow-[0_0_8px_#22d3ee] animate-pulse" />
@@ -123,7 +123,7 @@ export function MenuBar({ items, scrollActiveIndex = -1, className, ...props }: 
 const navItems = [
   { icon: Home, label: "Home" },
   { icon: Eye, label: "Vision" },
-  { icon: Layers, label: "Process" },
+  { icon: Cpu, label: "Services", href: "#capabilities" },
   { icon: MessageSquareQuote, label: "Reviews" },
   { icon: Mail, label: "Contact", href: "#footer" },
 ];

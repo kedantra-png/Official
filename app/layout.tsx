@@ -43,11 +43,11 @@ const blackOpsOne = localFont({
 export const metadata: Metadata = {
   metadataBase: new URL("https://oordhwa.com"),
   title: {
-    default: "Oordhwa Tech Solutions (Urdhva Tech) | Software, Web & AI Solutions",
+    default: "Oordhwa Tech Solutions | Software, Web & AI Solutions",
     template: "%s | Oordhwa Tech Solutions",
   },
   description:
-    "Oordhwa Tech Solutions (also searched as Urdhva Tech) delivers end-to-end digital solutions, including web development, mobile apps, AI integration, hardware IoT systems, and cloud services in Kundapura, Udupi, Karnataka.",
+    "Oordhwa Tech Solutions delivers end-to-end digital solutions, including web development, mobile apps, AI integration, hardware IoT systems, and cloud services in Kundapura, Udupi, Karnataka.",
   keywords: [
     "Oordhwa",
     "Oordhwa Tech Solutions",
@@ -74,6 +74,39 @@ export const metadata: Metadata = {
     "AI solutions Kundapura",
     "Udupi tech company",
     "IT services software consulting",
+    "hardware IoT systems",
+    "cloud services",
+    "UI/UX design",
+    "app development in kundapura",
+    "software development in kundapura",
+    "AI development in kundapura",
+    "hardware IoT systems in kundapura",
+    "cloud services in kundapura",
+    "UI/UX design in kundapura",
+    "app development in udupi",
+    "software development in udupi",
+    "AI development in udupi",
+    "hardware IoT systems in udupi",
+    "cloud services in udupi",
+    "UI/UX design in udupi",
+    "Oordhwa Tech Solutions",
+    "Oordhwa",
+    "oordhwa",
+    "Oordhwa Tech",
+    "Oordhwa Solutions",
+    "Oordhwa software",
+    "Oordhwa web",
+    "Oordhwa app",
+    "Oordhwa AI",
+    "Oordhwa hardware",
+    "Oordhwa cloud",
+    "Oordhwa UI/UX",
+    "Oordhwa web development",
+    "Oordhwa app development",
+    "Oordhwa AI development",
+    "Oordhwa hardware development",
+    "Oordhwa cloud development",
+    "Oordhwa UI/UX development",
   ],
   authors: [{ name: "Oordhwa Tech Solutions", url: "https://oordhwa.com" }],
   creator: "Oordhwa Tech Solutions",
@@ -94,51 +127,54 @@ export const metadata: Metadata = {
   },
   icons: {
     icon: [
-      { url: "/oordhwa-icon.png", type: "image/png" },
-      { url: "/favicon.ico", sizes: "any" },
-      { url: "/icon.png", type: "image/png" },
+      { url: "/favicon.ico", sizes: "16x16 32x32 48x48", type: "image/x-icon" },
+      { url: "/icon-48.png", sizes: "48x48", type: "image/png" },
+      { url: "/icon-96.png", sizes: "96x96", type: "image/png" },
+      { url: "/icon-192.png", sizes: "192x192", type: "image/png" },
     ],
-    shortcut: "/oordhwa-icon.png",
+    shortcut: "/favicon.ico",
     apple: [
-      { url: "/oordhwa-icon.png", sizes: "180x180", type: "image/png" },
       { url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" },
-    ],
-    other: [
-      {
-        rel: "image_src",
-        url: "https://oordhwa.com/oordhwa-icon.png",
-      },
     ],
   },
   openGraph: {
     type: "website",
     locale: "en_US",
     url: "https://oordhwa.com",
-    title: "Oordhwa Tech Solutions (Urdhva Tech)",
+    title: "Oordhwa Tech Solutions",
     description:
-      "Oordhwa Tech Solutions (Urdhva Tech) delivers end-to-end digital solutions, including web development, mobile apps, AI integration, cloud services, and UI/UX design.",
+      "Oordhwa Tech Solutions delivers end-to-end digital solutions, including web development, mobile apps, AI integration, cloud services, and UI/UX design.",
     siteName: "Oordhwa Tech Solutions",
     images: [
       {
-        url: "https://oordhwa.com/oordhwa-icon.png",
-        width: 512,
-        height: 512,
-        alt: "Oordhwa Tech Solutions Search Logo",
+        url: "https://oordhwa.com/oordhwa-og.jpg",
+        width: 1200,
+        height: 630,
+        type: "image/jpeg",
+        alt: "Oordhwa Tech Solutions",
       },
       {
         url: "https://oordhwa.com/oordhwa-logo.png",
         width: 1200,
         height: 630,
+        type: "image/png",
         alt: "Oordhwa Tech Solutions",
+      },
+      {
+        url: "https://oordhwa.com/oordhwa-icon.png",
+        width: 512,
+        height: 512,
+        type: "image/png",
+        alt: "Oordhwa Tech Solutions Emblem",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Oordhwa Tech Solutions (Urdhva Tech)",
+    title: "Oordhwa Tech Solutions",
     description:
-      "Oordhwa Tech Solutions (Urdhva Tech) delivers end-to-end digital solutions, including web development, mobile apps, AI integration, and UI/UX design.",
-    images: ["https://oordhwa.com/oordhwa-icon.png"],
+      "Oordhwa Tech Solutions delivers end-to-end digital solutions, including web development, mobile apps, AI integration, and UI/UX design.",
+    images: ["https://oordhwa.com/oordhwa-og.jpg"],
   },
 };
 
@@ -162,10 +198,10 @@ export default function RootLayout({
       "Oordhwa Solutions",
     ],
     url: "https://oordhwa.com",
-    logo: "https://oordhwa.com/oordhwa-icon.png",
-    image: "https://oordhwa.com/oordhwa-icon.png",
+    logo: "https://oordhwa.com/oordhwa-og.jpg",
+    image: "https://oordhwa.com/oordhwa-og.jpg",
     description:
-      "Oordhwa Tech Solutions (Urdhva Tech) is an IT services and software consulting company specializing in web development, mobile apps, AI solutions, and hardware IoT integrations.",
+      "Oordhwa Tech Solutions is an IT services and software consulting company specializing in web development, mobile apps, AI solutions, and hardware IoT integrations.",
     address: {
       "@type": "PostalAddress",
       addressLocality: "Kundapura",
@@ -180,10 +216,6 @@ export default function RootLayout({
       className={`${cinzel.variable} ${poppins.variable} ${inter.variable} ${shareTechMono.variable} ${blackOpsOne.variable}`}
     >
       <head>
-        <link rel="icon" href="/oordhwa-icon.png" type="image/png" sizes="any" />
-        <link rel="icon" href="/favicon.ico" sizes="any" />
-        <link rel="shortcut icon" href="/oordhwa-icon.png" type="image/png" />
-        <link rel="apple-touch-icon" href="/oordhwa-icon.png" sizes="180x180" />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}

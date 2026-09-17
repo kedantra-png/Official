@@ -1,6 +1,5 @@
 import { CapabilitiesSection } from "@/components/CapabilitiesSection";
 import { CustomerExperiencesSection } from "@/components/CustomerExperiencesSection";
-import { DevelopmentProcessSection } from "@/components/DevelopmentProcessSection";
 import { FaqSection } from "@/components/FaqSection";
 import { HeroSection } from "@/components/HeroSection";
 import { OordhwaFooter } from "@/components/OordhwaFooter";
@@ -15,7 +14,6 @@ export default function Home() {
         <HeroSection />
         <VisionMissionSection />
         <CapabilitiesSection />
-        <DevelopmentProcessSection />
         <FaqSection />
         <CustomerExperiencesSection />
         <OordhwaFooter />

@@ -8,8 +8,8 @@ export function HeroSection() {
     <section id="home" className="relative w-full">
       <PixelHero
         description="We design high-performance web systems, custom neural automation pipelines, and native-feeling mobile applications built for scale."
-        primaryCta="Explore Capabilities"
-        primaryCtaMobile="Capabilities"
+        primaryCta="What We Build"
+        primaryCtaMobile="Services"
         secondaryCta="Connect"
         secondaryCtaMobile="Connect"
         onPrimaryClick={() => {
